@@ -12,11 +12,6 @@ import java.util.Map;
 public class WorldHelper {
     private static final Map<String, InstanceContainer> worlds = new HashMap<>();
 
-    public WorldHelper() {
-        File folder = new File("worlds");
-        if (!folder.exists()) folder.mkdir();
-    }
-
     public static void importWorld(@NotNull String name) {
         InstanceContainer container = MinecraftServer.getInstanceManager().createInstanceContainer(new AnvilLoader("worlds/" + name));
         worlds.put(name, container);

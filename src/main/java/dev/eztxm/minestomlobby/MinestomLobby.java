@@ -41,7 +41,6 @@ public class MinestomLobby {
         }
         MojangAuth.init();
         OptifineSupport.enable();
-        new WorldHelper();
         WorldHelper.importWorld("world");
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         Instance world = instanceManager.createInstanceContainer();
