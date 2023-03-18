@@ -8,17 +8,15 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.instance.InstanceContainer;
-
-import java.awt.*;
+import net.minestom.server.instance.Instance;
 
 public class Listener {
 
-    public static void playerLogin(GlobalEventHandler globalEventHandler, InstanceContainer instanceContainer) {
+    public static void playerLogin(GlobalEventHandler globalEventHandler, Instance instance) {
         globalEventHandler.addListener(PlayerLoginEvent.class, event -> {
             final Player player = event.getPlayer();
-            event.setSpawningInstance(instanceContainer);
-            player.setRespawnPoint(new Pos(0.5, 65, 0.5, 0, 0));
+            event.setSpawningInstance(instance);
+            player.setRespawnPoint(new Pos(0.5, -60, 0.5, 0, 0));
         });
     }
 

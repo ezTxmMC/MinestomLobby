@@ -3,28 +3,34 @@ package dev.eztxm.minestomlobby;
 import dev.eztxm.minestomlobby.command.Command;
 import dev.eztxm.minestomlobby.config.ConfigManager;
 import dev.eztxm.minestomlobby.listener.Listener;
-import dev.eztxm.minestomlobby.sql.SQL;
 import dev.eztxm.minestomlobby.terminal.MineTerminal;
+import dev.eztxm.minestomlobby.world.WorldGeneration;
 import dev.eztxm.minestomlobby.world.WorldHelper;
+import dev.eztxm.sql.SQLiteConnection;
+import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
 import net.minestom.server.extras.optifine.OptifineSupport;
 import net.minestom.server.extras.velocity.VelocityProxy;
-import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.InstanceManager;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class MinestomLobby {
+    @Getter
+    private static SQLiteConnection sqlConnection;
 
     public static void main(String[] args) {
         File worldsFolder = new File("worlds");
         if (!worldsFolder.exists()) worldsFolder.mkdir();
         ConfigManager configManager = new ConfigManager(null, "config.json");
-        SQL.start();
+        sqlConnection = new SQLiteConnection("data", "lobby");
+        sqlConnection.update("CREATE TABLE IF NOT EXISTS operators(uuid VARCHAR(255))");
         MinecraftServer minecraftServer = MinecraftServer.init();
         MinecraftServer.setTerminalEnabled(false);
         if ((boolean) configManager.getValue("Proxy")) {
@@ -37,9 +43,11 @@ public class MinestomLobby {
         OptifineSupport.enable();
         new WorldHelper();
         WorldHelper.importWorld("world");
-        InstanceContainer instanceContainer = WorldHelper.getWorld("world");
+        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
+        Instance world = instanceManager.createInstanceContainer();
+        WorldGeneration.gen(world);
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
-        Listener.playerLogin(globalEventHandler, instanceContainer);
+        Listener.playerLogin(globalEventHandler, world);
         Listener.playerSpawn(globalEventHandler);
         Command.activateCommands();
         MinecraftServer.setBrandName("Lobby");
